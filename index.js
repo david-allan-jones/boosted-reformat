@@ -44,7 +44,6 @@ readStream.pipe(csvParser())
             case 'm': unitDivisor = 60; break;
             case 'h': unitDivisor = 3600; break;
         }
-        console.log(unitDivisor)
         const duration = (parseInt(str[0]) * 3600 + parseInt(str[1]) * 60 + parseInt(str[2])) / unitDivisor;
         result[date] = result[date] || {};
         result[date][project] = duration + (result[date][project] || 0);
@@ -53,14 +52,20 @@ readStream.pipe(csvParser())
         console.info('Finished parsing input. Preparing result for output.');
         console.info(`Order of output values is Date, ${Object.keys(projectOrder.projects).join(', ')}`);
 
-        const orderObjectArray = require('./order-object-array')
-        const data = Object.keys(result).map(date => {
-            minutes = Object.keys(result[date]).map(project => result[date][project] || 0)
+        const header = args.h
+            ? ['Date', ...Object.keys(projectOrder.projects).sort((a, b) => {
+                return projectOrder.projects[a] < projectOrder.projects[b] ? -1 : 1;
+            })]
+            : [];
+
+        const orderObjectArray = require('./order-object-array');
+        const data = [header, ...Object.keys(result).map(date => {
+            minutes = Object.keys(result[date]).map(project => result[date][project] || 0);
             return [
                 date,
                 ...orderObjectArray(result[date], projectOrder.projects, 0)
             ]
-        });
+        })];
         const writer = csvWriter.createArrayCsvWriter({
             path: output,
         });

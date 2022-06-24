@@ -20,9 +20,10 @@ if (inputErrors.length > 0) {
     process.exit(1);
 }
 
-console.info(`Beginning parse of ${input}...`);
-fs.createReadStream(input)
-    .pipe(csvParser())
+console.info(`Opening read stream of ${input}...`);
+
+const readStream = fs.createReadStream(input)
+readStream.pipe(csvParser())
     .on('data', row => {
         const project = row['Project name'], date = row['Date'], str = row['Duration'].split(':');
         const durationMinutes = parseInt(str[0]) * 60 + parseInt(str[1]) + parseInt(str[2]) / 60;
@@ -31,19 +32,24 @@ fs.createReadStream(input)
     })
     .on('end', () => {
         console.info('Finished parsing input. Preparing result for output.');
-        const data = Object.keys(result).map((key) => ([
-            key,
-            result[key]['Reading'] || 0,
-            result[key]['Listening'] || 0,
-            result[key]['Writing'] || 0,
-            result[key]['Speaking'] || 0,
-            result[key]['Anki'] || 0,
-            result[key]['Grammar'] || 0,
-        ]));
+        const data = Object.keys(result).map((date, index) => {
+            if (index === 0) {
+                console.info(`Order of values is Date followed by ${Object.keys(result[date]).join(', ')}`)
+            }
+
+            minutes = Object.keys(result[date]).map(project => result[date][project] || 0)
+            return [
+                date,
+                ...minutes
+            ]
+        });
         const writer = csvWriter.createArrayCsvWriter({
             path: output,
         });
         console.info(`Writing output to ${output}...`);
         writer.writeRecords(data)
-            .then(() => console.info('CSV file successfully processed'));
+            .then(() => console.info('Finished writing output.'));
+    })
+    .on('close', () => {
+        console.info(`Closed read stream of ${input}.`)
     })

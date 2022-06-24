@@ -3,7 +3,12 @@ const csvWriter = require('csv-writer');
 const fs = require('fs');
 
 const result = {};
-fs.createReadStream('boosted.csv')
+
+const input = process.argv[2];
+const output = process.argv[3];
+
+console.info(`Beginning parse of ${input}...`);
+fs.createReadStream(input)
     .pipe(csvParser())
     .on('data', row => {
         const project = row['Project name'], date = row['Date'], str = row['Duration'].split(':');
@@ -12,6 +17,7 @@ fs.createReadStream('boosted.csv')
         result[date][project] = durationMinutes + (result[date][project] || 0);
     })
     .on('end', () => {
+        console.info('Finished parsing input. Preparing result for output.');
         const data = Object.keys(result).map((key) => ([
             key,
             result[key]['Reading'] || 0,
@@ -22,8 +28,9 @@ fs.createReadStream('boosted.csv')
             result[key]['Grammar'] || 0,
         ]));
         const writer = csvWriter.createArrayCsvWriter({
-            path: 'boostedMap.csv',
+            path: output,
         });
+        console.info(`Writing output to ${output}...`);
         writer.writeRecords(data)
-            .then(() => console.log('CSV file successfully processed'));
+            .then(() => console.info('CSV file successfully processed'));
     })

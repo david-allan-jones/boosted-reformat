@@ -5,7 +5,20 @@ const fs = require('fs');
 const result = {};
 
 const input = process.argv[2];
+
+const inputErrors = [];
+if (input === undefined) {
+    inputErrors.push('Please provide an input filepath to a boosted csv export.')
+}
 const output = process.argv[3];
+if (output === undefined) {
+    inputErrors.push('Please provide an output filepath following the input argument.')
+}
+
+if (inputErrors.length > 0) {
+    inputErrors.forEach((err) => console.error(err));
+    process.exit(1);
+}
 
 console.info(`Beginning parse of ${input}...`);
 fs.createReadStream(input)

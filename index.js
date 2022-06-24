@@ -1,18 +1,26 @@
 const csvParser = require('csv-parser');
 const csvWriter = require('csv-writer');
 const fs = require('fs');
+const yargs = require('yargs/yargs');
+
+args = yargs(process.argv.slice(2)).argv
 
 const result = {};
 
-const input = process.argv[2];
-
+const input = args._[0];
 const inputErrors = [];
 if (input === undefined) {
     inputErrors.push('Please provide an input filepath to a boosted csv export.')
 }
-const output = process.argv[3];
+const output = args._[1];
 if (output === undefined) {
     inputErrors.push('Please provide an output filepath following the input argument.')
+}
+
+const UNITS_WHITELIST = ['s', 'm', 'h']
+const units = args.u || 'm'
+if (!UNITS_WHITELIST.includes(units)) {
+    inputErrors.push('Invalid units provided. Please use one of the following. s=seconds, m=minutes, h=hours');
 }
 
 if (inputErrors.length > 0) {
@@ -30,9 +38,16 @@ readStream.pipe(csvParser())
         if (projectOrder.projects[project] === undefined) {
             projectOrder.projects[project] = ++projectOrder['currentIndex'];
         }
-        const durationMinutes = parseInt(str[0]) * 60 + parseInt(str[1]) + parseInt(str[2]) / 60;
+        let unitDivisor
+        switch (units) {
+            case 's': unitDivisor = 1; break;
+            case 'm': unitDivisor = 60; break;
+            case 'h': unitDivisor = 3600; break;
+        }
+        console.log(unitDivisor)
+        const duration = (parseInt(str[0]) * 3600 + parseInt(str[1]) * 60 + parseInt(str[2])) / unitDivisor;
         result[date] = result[date] || {};
-        result[date][project] = durationMinutes + (result[date][project] || 0);
+        result[date][project] = duration + (result[date][project] || 0);
     })
     .on('end', () => {
         console.info('Finished parsing input. Preparing result for output.');

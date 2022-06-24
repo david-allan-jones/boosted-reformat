@@ -23,20 +23,22 @@ if (inputErrors.length > 0) {
 console.info(`Opening read stream of ${input}...`);
 
 const readStream = fs.createReadStream(input)
+const projectOrder = { currentIndex: -1, projects:{} }
 readStream.pipe(csvParser())
     .on('data', row => {
         const project = row['Project name'], date = row['Date'], str = row['Duration'].split(':');
+        if (projectOrder.projects[project] === undefined) {
+            projectOrder.projects[project] = ++projectOrder['currentIndex'];
+        }
         const durationMinutes = parseInt(str[0]) * 60 + parseInt(str[1]) + parseInt(str[2]) / 60;
         result[date] = result[date] || {};
         result[date][project] = durationMinutes + (result[date][project] || 0);
+        console.log(result)
     })
     .on('end', () => {
         console.info('Finished parsing input. Preparing result for output.');
+        console.info(`Order of output values is Date, ${Object.keys(projectOrder.projects).join(', ')}`);
         const data = Object.keys(result).map((date, index) => {
-            if (index === 0) {
-                console.info(`Order of values is Date followed by ${Object.keys(result[date]).join(', ')}`)
-            }
-
             minutes = Object.keys(result[date]).map(project => result[date][project] || 0)
             return [
                 date,

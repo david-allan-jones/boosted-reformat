@@ -1,5 +1,9 @@
 # boosted-reformat
 
+## Purpose
+
+This is a CLI tool built on Node that can be used to aggregate data from a Boosted CSV export and output the result in CSV file you specify. [Boosted](https://play.google.com/store/apps/details?id=com.boostedproductivity.app&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1) is a time tracking application that is available on the Google Play Store.
+
 ## Usage
 
 First thing you will need to do to use this tool is download or clone this project from [Github](https://github.com/david-allan-jones/boosted-reformat). Then you will need to install Node, which you can do [here](https://nodejs.dev/download/).

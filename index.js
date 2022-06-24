@@ -33,16 +33,17 @@ readStream.pipe(csvParser())
         const durationMinutes = parseInt(str[0]) * 60 + parseInt(str[1]) + parseInt(str[2]) / 60;
         result[date] = result[date] || {};
         result[date][project] = durationMinutes + (result[date][project] || 0);
-        console.log(result)
     })
     .on('end', () => {
         console.info('Finished parsing input. Preparing result for output.');
         console.info(`Order of output values is Date, ${Object.keys(projectOrder.projects).join(', ')}`);
-        const data = Object.keys(result).map((date, index) => {
+
+        const orderObjectArray = require('./order-object-array')
+        const data = Object.keys(result).map(date => {
             minutes = Object.keys(result[date]).map(project => result[date][project] || 0)
             return [
                 date,
-                ...minutes
+                ...orderObjectArray(result[date], projectOrder.projects, 0)
             ]
         });
         const writer = csvWriter.createArrayCsvWriter({

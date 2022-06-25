@@ -12,15 +12,30 @@ Once the project is downloaded, cd into the root of the project and run `npm ins
 
 Once everything is installed, you simply need to use Node to run the index.js file in this package. There are 2 requirement arguments, the input file path (default name is boosted.csv when exported from the application) and a desired output file path (whatever you want).
 
-Examples:
+### Example
 
-`node index.js boosted.csv report.csv`
+```
+node index.js boosted.csv report.csv -u m -h
+```
+**boosted.csv**
+```
+"Project name","Task name","Date","Start time","End time","Duration","Time zone","Project archived","Task completed"
+"Writing",,"2022-06-23","1:02:01 pm","1:03:01 pm","01:00:00","-05:00","false",
+"Programming",,"2022-06-24","12:18:28 pm","1:18:28 pm","01:00:00","-05:00","false",
+"Japanese Study",,"2022-06-24","12:18:37 pm","1:18:37 pm","01:00:00","-05:00","false",
+"Japanese Speaking",,"2022-06-24","12:18:41 pm","1:18:41 pm","01:00:00","-05:00","false",
+"Listening Drills",,"2022-06-24","1:00:23 pm","1:30:23 pm","00:30:00","-05:00","false",
+"Reading",,"2022-06-24","1:01:11 pm","1:46:11 pm","00:45:00","-05:00","false",
+"Writing",,"2022-06-24","1:02:22 pm","1:32:22 pm","00:30:00","-05:00","false",
+"Writing",,"2022-06-24","1:02:29 pm","2:02:29 pm","01:00:00","-05:00","false",
+```
 
-`node index.js boosted.csv report.csv -u h`
-
-`node index.js boosted.csv report.csv -h`
-
-`node index.js boosted.csv report.csv -u s -h`
+**report.csv**
+```
+Date,Writing,Programming,Japanese Study,Japanese Speaking,Listening Drills,Reading
+2022-06-23,60,0,0,0,0,0
+2022-06-24,90,60,60,60,30,45
+```
 
 ### Flags
 
